@@ -6,6 +6,7 @@ start_col = 4
 expected_coffee_cups = 5
 cafe_robot = robot(start_row,start_col,expected_coffee_cups)
 current_env = environment.env
+visited = []
 
 def restart_state():
      cafe_robot.update_pos(start_row,start_col)
@@ -70,36 +71,77 @@ def move_to(row,col):
             open_door(row,col)
             delete_pos(cafe_robot.robot_position_row,cafe_robot.robot_position_col)
             add_pos(row,col)
+            environment.path.append([row,col])
         elif current_env[row][col].contains('DW') and check_door_status(row,col) == 'open':
             add_pos(row,col)
             environment.path.append([row,col])
         else:	
+            add_pos(row,col)
+            environment.path.append([row,col])
+    else:
             return 'invalid location'
             
-visited = []
-def mark_visited(node, v):
-    return
 
-def get_neighbors(node, env):
-    return
+def mark_visited(node, v):
+    v.append(node)
+
+#0 0 0
+#0 0 0
+#0 0 0
+def get_neighbors(node):
+    #node must be passed to the function in the [row,col] format
+    adj_nodes = []
+    adj_nodes.append([node-1,node])
+    adj_nodes.append([node+1,node])
+    adj_nodes.append([node,node-1])
+    adj_nodes.append([node,node+1])
+    return adj_nodes    
+
 
 def is_visited(node,v):
-    return
+    if node in v:
+        return True
+    else:
+        return False
 
-def find_path_bfs(s, e, env):
-    queue = [(s, [])]  # start point, empty path
+def bfs(s, e):
+    queue = [(s, [])]  # Start Point, Empty Path
 
     while len(queue) > 0:
         node, path = queue.pop(0)
+        if environment.mapped_name[node[0],node[1]] == 'US':
+            pass
         path.append(node)
         mark_visited(node, visited)
 
         if node == e:
-            return path
+            return path #Get Path
 
-        adj_nodes = get_neighbors(node, env)
+        adj_nodes = get_neighbors(node)
         for item in adj_nodes:
             if not is_visited(item, visited):
                 queue.append((item, path[:]))
 
-    return None  # no path found
+    return None  #Invalid Path
+
+# Start Stop Method
+
+def get_next_goal(): #Stop
+        if environment.requested_coffee == []: #End (Success State)
+            return 'SS'
+        else:
+            return environment.requested_coffee[0] #Current Goal
+
+def start_new_goal(): #Start
+    current_goal = get_next_goal()
+    if current_goal == 'SS' or environment.success_state:
+        return
+    else:
+        path = bfs([cafe_robot.robot_position_row,cafe_robot.robot_position_col],current_goal)
+        for step in path:
+            if step == current_goal:
+                give_coffee()
+                break
+            else:
+                move_to(step[0],step[[1]])
+        start_new_goal()
