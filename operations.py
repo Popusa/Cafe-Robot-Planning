@@ -66,7 +66,7 @@ def move_to(row,col):
     if check_failure() == True:
         restart_state()
         return
-    if check_pre_condition(row,col) == True and current_env[row][col] != 'US':
+    if check_pre_condition(row,col) == True and current_env[row][col] != '-1':
         if current_env[row][col].contains('DW') and check_door_status(row,col)  == 'closed':
             open_door(row,col)
             delete_pos(cafe_robot.robot_position_row,cafe_robot.robot_position_col)
@@ -108,19 +108,19 @@ def bfs(s, e):
     queue = [(s, [])]  # Start Point, Empty Path
 
     while len(queue) > 0:
-        node, path = queue.pop(0)
-        if environment.mapped_name[node[0],node[1]] == 'US':
+        node, bfs_path = queue.pop(0)
+        if environment.mapped_name[node[0],node[1]] == '-1':
             pass
-        path.append(node)
+        bfs_path.append(node)
         mark_visited(node, visited)
 
         if node == e:
-            return path #Get Path
+            return bfs_path #Get Path
 
         adj_nodes = get_neighbors(node)
         for item in adj_nodes:
             if not is_visited(item, visited):
-                queue.append((item, path[:]))
+                queue.append((item, bfs_path[:]))
 
     return None  #Invalid Path
 
@@ -137,8 +137,8 @@ def start_new_goal(): #Start
     if current_goal == 'SS' or environment.success_state:
         return
     else:
-        path = bfs([cafe_robot.robot_position_row,cafe_robot.robot_position_col],current_goal)
-        for step in path:
+        bfs_path = bfs([cafe_robot.robot_position_row,cafe_robot.robot_position_col],current_goal)
+        for step in bfs_path:
             if step == current_goal:
                 give_coffee()
                 break
