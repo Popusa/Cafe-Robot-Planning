@@ -103,10 +103,14 @@ def mark_visited(node, v):
 def get_neighbors(node):
     #node must be passed to the function in the [row,col] format
     adj_nodes = []
-    adj_nodes.append([node-1,node])
-    adj_nodes.append([node+1,node])
-    adj_nodes.append([node,node-1])
-    adj_nodes.append([node,node+1])
+    if [node-1,node] != '-1':
+        adj_nodes.append([node-1,node])
+    if [node+1,node] != '-1':    
+        adj_nodes.append([node+1,node])
+    if [node,node-1] != '-1':
+        adj_nodes.append([node,node-1])
+    if [node,node+1] != '-1':
+        adj_nodes.append([node,node+1])
     return adj_nodes    
 
 
@@ -121,8 +125,6 @@ def bfs(s, e):
 
     while len(queue) > 0:
         node, bfs_path = queue.pop(0)
-        if environment.mapped_name[node[0],node[1]] == '-1':
-            pass
         bfs_path.append(node)
         mark_visited(node, visited)
 
@@ -149,11 +151,11 @@ def start_new_goal(): #Start
     if current_goal == 'SS' or environment.success_state:
         return
     else:
-        bfs_path = bfs([cafe_robot.robot_position_row,cafe_robot.robot_position_col],current_goal)
+        bfs_path = bfs([cafe_robot.robot_position_row,cafe_robot.robot_position_col],current_goal) #Shortest Path to Goal
         for step in bfs_path:
             if step == current_goal:
-                give_coffee()
+                give_coffee() #Goal Reached
                 break
             else:
                 move_to(step[0],step[[1]])
-        start_new_goal()
+        start_new_goal() #Recursive Function Call to Get Next Goal
