@@ -1,5 +1,4 @@
 import tkinter as tk
-import numpy as np
 import environment
 window = tk.Tk()
 window.title("cafe robot planning")
