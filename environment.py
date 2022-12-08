@@ -1,4 +1,5 @@
-requested_coffee = [[],[],[],[],[]]
+requested_staff = []
+requested_coffee = []
 success_state = False
 path = []
 env = [

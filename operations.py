@@ -4,10 +4,22 @@ import random
 start_row = 12
 start_col = 4
 expected_coffee_cups = 5
-cafe_robot = robot(start_row,start_col,expected_coffee_cups)
+cafe_robot = robot.robot(start_row,start_col,expected_coffee_cups)
 current_env = environment.env
 visited = []
 
+def find_location_in_env(env,item):
+    for i in range(len(env)):
+        for j in range(len(env)):
+            if env[i][j] == item:
+                return [i,j]
+
+def translate_staff_position(env):
+    listloop = 0
+    while(len(environment.requested_coffee) != len(environment.requested_staff)):
+        environment.requested_coffee.append(find_location_in_env(env,environment.requested_staff[listloop]))
+        listloop += 1
+    
 def restart_state():
      cafe_robot.update_pos(start_row,start_col)
 
