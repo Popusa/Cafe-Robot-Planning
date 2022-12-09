@@ -2,14 +2,14 @@ import tkinter as tk
 import environment
 window = tk.Tk()
 window.title("cafe robot planning")
-window.geometry("500x500")
+window.geometry("500x420")
 window.resizable(False, False)
 buttonslist = [[0]*len(environment.env) for i in range(len(environment.env))]
 
 def make_grid():
     for i in range(len(environment.env)):
         for j in range(len(environment.env)):
-            buttonslist[i][j] = (tk.Button(window, text = environment.env[i][j]))
+            buttonslist[i][j] = (tk.Button(window, text = environment.env[i][j],width=3))
             buttonslist[i][j].grid(row=i,column=j)
 def update_color():
     counter = 0
