@@ -1,4 +1,6 @@
-requested_staff = ['TA3','TA5','TA12']
+failed_state = False
+restarted_state = False
+requested_staff = ['TA3','TA5','DR']
 requested_coffee = []
 success_state = False
 path = []
@@ -20,7 +22,7 @@ env = [
 ['-1','-1','0','0','0','0','-1','0','0','-1','-1','-1','-1','-1','-1','-1'],
 ['-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1'],
 ]
-mapped_name = [
+mapped_names = [
 ['-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1'],
 ['-1','-1','-1','-1','-1','-1','0','TA10','TA9','0','-1','-1','-1','-1','-1','-1'],
 ['-1','-1','-1','-1','-1','-1','0','TA11','TA8','0','-1','-1','-1','-1','-1','-1'],
@@ -48,10 +50,10 @@ door_stat = [
 ['NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW'],
 ['NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW'],
 ['NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW'],
-['NDW','NDW','NDW','NDW','NDW','NDW',False,'NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW'],
-['NDW','NDW','NDW','NDW',False,'NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW'],
-['NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW',False,'NDW','NDW','NDW','NDW','NDW'],
-['NDW','NDW','NDW','NDW','CR','NDW',False,'NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW'],
+['NDW','NDW','NDW','NDW','NDW','NDW','CDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW'],
+['NDW','NDW','NDW','NDW','CDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW'],
+['NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','CDW','NDW','NDW','NDW','NDW','NDW'],
+['NDW','NDW','NDW','NDW','CR','NDW','CDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW'],
 ['NDW','NDW','NDW','NDW','CM','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW'],
 ['NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW'],
 ['NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW','NDW'],

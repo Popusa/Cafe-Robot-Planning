@@ -19,13 +19,13 @@ def update_color():
         for j in range(len(environment.env)):
             if 'TA' in environment.env[i][j] or 'DR' in environment.env[i][j]:
                 buttonslist[i][j].config(background="orange")
-                buttonslist[i][j].config(text = environment.mapped_name[i][j])
+                buttonslist[i][j].config(text = environment.mapped_names[i][j])
             elif '-1' in environment.env[i][j]:
                 buttonslist[i][j].config(background="black")
             elif 'DW' in environment.env[i][j]:
                 buttonslist[i][j].config(background="blue")
                 buttonslist[i][j].config(foreground="white")
-                buttonslist[i][j].config(text = environment.mapped_name[i][j])
+                buttonslist[i][j].config(text = environment.mapped_names[i][j])
             elif 'CR' in environment.env[i][j]:
                 buttonslist[i][j].config(background="brown")
                 buttonslist[i][j].config(text = 'CR')
