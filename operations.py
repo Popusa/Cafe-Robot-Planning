@@ -93,6 +93,7 @@ def move_to(row,col):
             add_pos(row,col)
             environment.path.append([row,col])
         print("Moved to pos", row," ", col)
+        print("robot is in pos", cafe_robot.robot_position_row,cafe_robot.robot_position_col)
     else:
         print('invalid location')
             
@@ -103,6 +104,17 @@ def mark_visited(node, v):
 #0 0 0
 #0 0 0
 #0 0 0
+
+def check_node_validity(node):
+    node_row = node[0]
+    node_col = node[1]
+    if node_row < 0 or node_row > len(environment.env) - 1 or node_col < 0 or node_col > len(environment.env) - 1: #Invalid
+        return False
+    elif environment.env[node_row][node_col] == '-1' or environment.env[node_row][node_col] == 'CM': #Invalid
+        return False
+    else:
+        return True #Valid
+
 def get_neighbors(node):
     neighbours = []
     node_row = node[0]
@@ -114,10 +126,9 @@ def get_neighbors(node):
     for node in neighbours:
         node_row = node[0]
         node_col = node[1]
-        if node_row < 0 or node_row > len(environment.env) - 1 or node_col < 0 or node_col > len(environment.env) - 1:
-            neighbours.remove(node)
+        if (check_node_validity([node_row,node_col])):
             continue
-        if environment.env[node_row][node_col] == '-1' or environment.env[node_row][node_col] == 'CM':
+        else:
             neighbours.remove(node)
     return neighbours
 

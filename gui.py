@@ -12,7 +12,7 @@ def make_grid():
         for j in range(len(environment.env)):
             buttonslist[i][j] = (tk.Button(window, text = environment.env[i][j],width=3))
             buttonslist[i][j].grid(row=i,column=j)
-            
+
 def update_color():
     counter = 0
     for i in range(len(environment.env)):
@@ -39,7 +39,7 @@ def update_color():
 
 def update_gui():
     window.update()
-    time.sleep(1)
+    time.sleep(0.7)
 
 def setup_gui():
     make_grid()

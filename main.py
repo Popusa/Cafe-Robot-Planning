@@ -12,6 +12,6 @@ def execute_task():
 
 if __name__=="__main__":
     gui.setup_gui()
-    # ops.translate_staff_position(env.env)
-    # gui.window.after(0,execute_task)
+    ops.translate_staff_position(env.env)
+    gui.window.after(0,execute_task)
     gui.window.mainloop()
