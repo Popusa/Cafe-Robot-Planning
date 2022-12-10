@@ -46,11 +46,10 @@ def delete_pos(row,col):
     else:
         environment.env[row][col] = environment.mapped_name[row][col]
 
-def give_coffee():
-    if expected_coffee_cups >= 1:
+def give_coffee(e_cups):
+    if e_cups >= 1:
         cafe_robot.update_coffee_cups()
-        expected_coffee_cups = expected_coffee_cups - 1
-        environment.requested_coffee.pop(0)
+        e_cups = e_cups - 1
     else:
         restart_state()
     if expected_coffee_cups == 0 and environment.requested_coffee == []:
@@ -108,12 +107,17 @@ def get_neighbors(node):
     neighbours = []
     node_row = node[0]
     node_col = node[1]
-    neighbours.append(environment.env[node_row - 1][node_col]) #top
-    neighbours.append(environment.env[node_row][node_col + 1]) #right
-    neighbours.append(environment.env[node_row + 1][node_col]) #bottom
-    neighbours.append(environment.env[node_row][node_col - 1]) #left
+    neighbours.append([node_row - 1,node_col]) #top
+    neighbours.append([node_row,node_col + 1]) #right
+    neighbours.append([node_row + 1,node_col]) #bottom
+    neighbours.append([node_row,node_col - 1]) #left
     for node in neighbours:
-        if environment.env[node[0],node[1]] == '-1':
+        node_row = node[0]
+        node_col = node[1]
+        if node_row < 0 or node_row > len(environment.env) - 1 or node_col < 0 or node_col > len(environment.env) - 1:
+            neighbours.remove(node)
+            continue
+        if environment.env[node_row][node_col] == '-1' or environment.env[node_row][node_col] == 'CM':
             neighbours.remove(node)
     return neighbours
 
@@ -154,12 +158,15 @@ def start_new_goal(): #Start
     if current_goal == 'SS' or environment.success_state:
         return
     else:
+        environment.requested_coffee.append([12,4])
         bfs_path = bfs([cafe_robot.robot_position_row,cafe_robot.robot_position_col],current_goal) #Shortest Path to Goal
         for step in bfs_path:
-            gui.update_gui()
             if step == current_goal:
-                give_coffee() #Goal Reached
+                give_coffee(expected_coffee_cups) #Goal Reached
+                environment.requested_coffee.pop(0)
                 break
             else:
-                move_to(step[0],step[[1]])
+                move_to(step[0],step[1])
+                gui.update_color()
+                gui.update_gui()
         start_new_goal() #Recursive Function Call to Get Next Goal
