@@ -2,7 +2,7 @@ import environment
 import robot
 import random
 import gui
-fail_state_mode = True
+fail_state_mode = False
 start_row = 12
 start_col = 4
 end_row = 12

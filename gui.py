@@ -61,7 +61,7 @@ def draw_visited_path():
         buttonslist[visited_pos[0]][visited_pos[1]]['text'] = environment.mapped_names[visited_pos[0]][visited_pos[1]]
         listloop = listloop + 1
         for pos in environment.path:
-            if environment.env[pos[0]][pos[1]][:2] == 'TA' or environment.env[pos[0]][pos[1]][:2] == 'DR':
+            if (environment.env[pos[0]][pos[1]][:2] == 'TA' or environment.env[pos[0]][pos[1]][:2] == 'DR') and environment.env[pos[0]][pos[1]] in environment.requested_staff:
                 buttonslist[pos[0]][pos[1]].config(background="white") #Goals Achieved
                 buttonslist[pos[0]][pos[1]].config(text = environment.mapped_names[pos[0]][pos[1]])
 
