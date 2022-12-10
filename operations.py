@@ -1,13 +1,13 @@
 import environment
 import robot
 import random
-import time
 import gui
 start_row = 12
 start_col = 4
+end_row = 12
+end_col = 3
 expected_coffee_cups = 5
 cafe_robot = robot.robot(start_row,start_col,expected_coffee_cups)
-visited = []
 
 def find_location_in_env(env,item):
     for i in range(len(env)):
@@ -46,20 +46,20 @@ def delete_pos(row,col):
     else:
         environment.env[row][col] = environment.mapped_name[row][col]
 
-def give_coffee(e_cups):
-    if e_cups >= 1:
-        cafe_robot.update_coffee_cups()
-        e_cups = e_cups - 1
-    else:
-        restart_state()
-    if expected_coffee_cups == 0 and environment.requested_coffee == []:
-        environment.success_state = True
+def update_expected_cups():
+    global expected_coffee_cups
+    expected_coffee_cups = expected_coffee_cups - 1
+
+def give_coffee():
+    cafe_robot.update_coffee_cups()
+    update_expected_cups()
+    print("Another Satisfied Customer!")
 
 def open_door(row,col):
     if check_pre_condition(row,col) == True and check_door_status(row,col) == 'open':
             environment.door_stat[row][col] = True
             print("Door at ",row, " ", col, " is now opened")
-            if random.randrange(1, 10) == 3:
+            if random.randrange(5, 10) == 3:
                 cafe_robot.update_coffee_cups()          #coffee cup spilled
 
 # def enter_doorway(row,col):
@@ -109,6 +109,8 @@ def check_node_validity(node):
     node_col = node[1]
     if environment.env[node_row][node_col] == '-1' or environment.env[node_row][node_col] == 'CM': #Invalid
             return False
+    # elif 'TA' in environment.env[node_row][node_col]:
+    #     return False
     elif node_row < 0 or node_row > len(environment.env) - 1 or node_col < 0 or node_col > len(environment.env) - 1: #Invalid
         return False
     else:
@@ -140,7 +142,7 @@ def is_visited(node,v):
 
 def bfs(s, e):
     queue = [(s, [])]  # Start Point, Empty Path
-
+    visited = []
     while len(queue) > 0:
         node, bfs_path = queue.pop(0)
         bfs_path.append(node)
@@ -166,18 +168,23 @@ def get_next_goal(): #Stop
             return environment.requested_coffee[0] #Current Goal
 
 def start_new_goal(): #Start
-        while environment.requested_coffee != []:
-            current_goal = get_next_goal()
-            print(current_goal)
-            environment.requested_coffee.append([12,4])
-            bfs_path = bfs([cafe_robot.robot_position_row,cafe_robot.robot_position_col],current_goal) #Shortest Path to Goal
-            print(bfs_path)
-            for step in bfs_path:
-                if step == current_goal:
-                    give_coffee(expected_coffee_cups) #Goal Reached
+    while environment.requested_coffee:
+        current_goal = get_next_goal()
+        if current_goal == 'SS':
+            return
+        print(current_goal)
+        bfs_path = bfs([cafe_robot.robot_position_row,cafe_robot.robot_position_col],current_goal) #Shortest Path to Goal
+        print(bfs_path)
+        for step in bfs_path:
+            if step == current_goal:
+                if current_goal == [end_row,end_col]:
                     environment.requested_coffee.pop(0)
                     break
-                else:
-                    move_to(step[0],step[1])
-                    gui.update_color()
-                    gui.update_gui()
+                give_coffee() #Goal Reached
+                environment.requested_coffee.pop(0)
+                break
+            else:
+                move_to(step[0],step[1])
+                gui.update_color()
+                gui.update_gui() #Refresh GUI
+    print("Mission Accomplished!")

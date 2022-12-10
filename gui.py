@@ -19,6 +19,7 @@ def update_color():
         for j in range(len(environment.env)):
             if 'TA' in environment.env[i][j] or 'DR' in environment.env[i][j]:
                 buttonslist[i][j].config(background="orange")
+                buttonslist[i][j].config(text = environment.mapped_name[i][j])
             elif '-1' in environment.env[i][j]:
                 buttonslist[i][j].config(background="black")
             elif 'DW' in environment.env[i][j]:
@@ -39,7 +40,7 @@ def update_color():
 
 def update_gui():
     window.update()
-    time.sleep(0.7)
+    time.sleep(0.2)
 
 def setup_gui():
     make_grid()
