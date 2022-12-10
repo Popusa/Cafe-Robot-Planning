@@ -7,13 +7,13 @@ window.geometry("500x420")
 window.resizable(False, False)
 buttonslist = [[0]*len(environment.env) for i in range(len(environment.env))]
 
-def make_grid():
+def make_grid(): #Define Grid
     for i in range(len(environment.env)):
         for j in range(len(environment.env)):
             buttonslist[i][j] = (tk.Button(window, text = environment.env[i][j],width=3))
             buttonslist[i][j].grid(row=i,column=j)
 
-def update_color():
+def update_color(): #Add Color Based on Current Env State
     for i in range(len(environment.env)):
         for j in range(len(environment.env)):
             if 'TA' in environment.env[i][j] or 'DR' in environment.env[i][j]:
@@ -56,13 +56,13 @@ def draw_visited_path():
     listloop = 0
     while len(environment.path) != listloop:
         visited_pos = environment.path[listloop]
-        buttonslist[visited_pos[0]][visited_pos[1]].config(background="yellow")
+        buttonslist[visited_pos[0]][visited_pos[1]].config(background="yellow") #Visited Nodes in Path
         buttonslist[visited_pos[0]][visited_pos[1]].config(foreground="blue")
         buttonslist[visited_pos[0]][visited_pos[1]]['text'] = environment.mapped_names[visited_pos[0]][visited_pos[1]]
         listloop = listloop + 1
         for pos in environment.path:
             if environment.env[pos[0]][pos[1]][:2] == 'TA' or environment.env[pos[0]][pos[1]][:2] == 'DR':
-                buttonslist[pos[0]][pos[1]].config(background="white")
+                buttonslist[pos[0]][pos[1]].config(background="white") #Goals Achieved
                 buttonslist[pos[0]][pos[1]].config(text = environment.mapped_names[pos[0]][pos[1]])
 
 def highlight_thirsty_staff():
@@ -70,5 +70,5 @@ def highlight_thirsty_staff():
         for j in range(len(environment.env)):
             if environment.env[i][j][:2] == 'DR' or environment.env[i][j][:2] == 'TA' and \
                 environment.env[i][j] in environment.requested_staff and environment.env[i][j] not in environment.path:
-                buttonslist[i][j].config(background="red")
+                buttonslist[i][j].config(background="red") #Staff That Did Not Recieve Their Coffee
                 buttonslist[i][j].config(text = environment.mapped_names[i][j])

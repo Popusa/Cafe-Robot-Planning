@@ -14,55 +14,55 @@ def find_location_in_env(env,item):
     for i in range(len(env)):
         for j in range(len(env)):
             if env[i][j] == item:
-                return [i,j]
+                return [i,j] #found
 
 def translate_staff_position(env):
     listloop = 0
     while(len(environment.requested_coffee) != len(environment.requested_staff)):
-        environment.requested_coffee.append(find_location_in_env(env,environment.requested_staff[listloop]))
+        environment.requested_coffee.append(find_location_in_env(env,environment.requested_staff[listloop])) #translate from mapped name to location
         listloop += 1
     
 def restart_state():
     print("I dropped a cup! I must go back and replace it!")
-    environment.requested_coffee = [[end_row,end_col]]
+    environment.requested_coffee = [[end_row,end_col]] #robot will begin moving back to restart
 
 def check_door_status(row,col):
 	if environment.door_stat[row][col] == 'CDW' and 'DW' in environment.env[row][col]:
-		return 'CDW'
+		return 'CDW' #closed door
 	else: 
-		return 'ODW'
+		return 'ODW' #open door
 
 def check_pre_condition(row,col):
     if (cafe_robot.robot_position_row == row - 1 or cafe_robot.robot_position_row == row + 1) and (cafe_robot.robot_position_col == col) or (cafe_robot.robot_position_col == col + 1 or col - 1) and (cafe_robot.robot_position_row == row):
-        return True
+        return True #robot can move there
     else:
-        return False
+        return False #robot cannot move there
 
 def add_pos(row,col):
     cafe_robot.update_pos(row,col)
-    environment.env[row][col] = 'CR'
+    environment.env[row][col] = 'CR' #robot location is now mapped here
 
 def delete_pos(row,col):
     if environment.mapped_names[row][col] == 'CR':
         environment.env[row][col] = '0'
     else:
-        environment.env[row][col] = environment.mapped_names[row][col]
+        environment.env[row][col] = environment.mapped_names[row][col] #mapped location where the robot once was
 
 def update_expected_cups():
     global expected_coffee_cups
-    expected_coffee_cups = expected_coffee_cups - 1
+    expected_coffee_cups = expected_coffee_cups - 1 #expected cups updated
 
 def give_coffee():
-    cafe_robot.update_coffee_cups()
+    cafe_robot.update_coffee_cups() #one satisfied customer
     update_expected_cups()
     print("Another Satisfied Customer!")
 
 def open_door(row,col):
     if check_door_status(row,col) == 'CDW':
-            environment.door_stat[row][col] = 'ODW'
+            environment.door_stat[row][col] = 'ODW' #door is now opened
             print("Door at Doorway",environment.mapped_names[row][col][2:], "is now opened")
             if fail_state_mode:
-                if random.randrange(1,3) == 2:
+                if random.randrange(1,10) == 5: #random chance to fail
                     cafe_robot.update_coffee_cups()          #coffee cup spilled
 
 def enter_doorway(row,col):
@@ -82,23 +82,23 @@ def check_failure(): #this function will be called after every door opening move
         return False
 
 def move_to(row,col):
-    if check_failure() == True:
+    if check_failure() == True: #if a fail state is reached, the process will be restarted
         environment.failed_state = True
     if check_pre_condition(row,col) == True and environment.env[row][col] != '-1':
         if 'DW' in environment.env[row][col] and check_door_status(row,col)  == 'CDW':
             open_door(row,col)
             delete_pos(cafe_robot.robot_position_row,cafe_robot.robot_position_col)
             add_pos(row,col)
-            environment.path.append([row,col])
+            environment.path.append([row,col]) #keep track of where the robot is going
         else:
             delete_pos(cafe_robot.robot_position_row,cafe_robot.robot_position_col)	
             add_pos(row,col)
             environment.path.append([row,col])
-        print("robot is in position: ", cafe_robot.robot_position_row,cafe_robot.robot_position_col)
+        print("robot is in position: ", cafe_robot.robot_position_row,cafe_robot.robot_position_col) #for testing purposes
             
 
 def mark_visited(node, v):
-    v.append(node)
+    v.append(node) #keeping track of shortest path for bfs
 
 #0 0 0
 #0 0 0
@@ -110,8 +110,6 @@ def check_node_validity(node):
     location_name = environment.env[node_row][node_col][:2]
     if environment.env[node_row][node_col] == '-1' or environment.env[node_row][node_col] == 'CM': #Invalid
             return False
-    # elif location_name == 'TA':
-    #     return False
     elif node_row < 0 or node_row > len(environment.env) - 1 or node_col < 0 or node_col > len(environment.env) - 1: #Invalid
         return False
     else:
@@ -129,13 +127,13 @@ def get_neighbors(node):
     for node in neighbours: #First Layer of Error Catching
         node_row = node[0]
         node_col = node[1]
-        if (check_node_validity([node_row,node_col])):
+        if (check_node_validity([node_row,node_col])): #Kept for validity
             pass
         else:
-            neighbours.remove(node)
+            neighbours.remove(node) #Removed for invalidity
     return neighbours
 
-def is_visited(node,v):
+def is_visited(node,v): #very self-explanatory
     if node in v:
         return True
     else:
@@ -155,12 +153,12 @@ def bfs(s, e):
         adj_nodes = get_neighbors(node)
         for node in adj_nodes: #Second Layer of Error Catching
             if check_node_validity(node) == False:
-                adj_nodes.remove(node)
+                adj_nodes.remove(node) #Remove Invalid Nodes
         for item in adj_nodes:
             if not is_visited(item, visited):
-                queue.append((item, bfs_path[:]))
+                queue.append((item, bfs_path[:])) #queue only keeps shortest path in list, while visiting all nodes
 
-# Start Stop Method
+# Start-Stop Method
 
 def get_next_goal(): #Stop
         if environment.requested_coffee == []: #End (Success State)
@@ -171,39 +169,38 @@ def get_next_goal(): #Stop
 def start_new_goal(): #Start
     while environment.requested_coffee:
         current_goal = get_next_goal()
-        if current_goal == 'SS':
+        if current_goal == 'SS': #Success!
             return
-        print(current_goal)
+        print(current_goal) #For Testing Purposes
         bfs_path = bfs([cafe_robot.robot_position_row,cafe_robot.robot_position_col],current_goal) #Shortest Path to Goal
-        print(bfs_path)
+        print(bfs_path) #For Testing Purposes
         for step in bfs_path:
             if environment.failed_state and not environment.restarted_state:
                 environment.restarted_state = True
-                restart_state()
+                restart_state() #If fail state is reached, process will restart
                 break
             if step == current_goal:
                 if environment.failed_state:
-                    environment.requested_coffee.pop(0)
+                    environment.requested_coffee.pop(0) #Reached Starting Position After Failure, Process Can Now Be Restarted
                     break
                 else:
-                    environment.requested_coffee.pop(0)
-                    move_to(step[0],step[1])
-                    gui.update_color()
-                    gui.update_gui() #Refresh GUI
-                    if current_goal == [end_row,end_col]:
+                    environment.requested_coffee.pop(0) #Reached Goal Position
+                    move_to(step[0],step[1]) #Move Closer to Hand Staff Their Coffee
+                    gui.update_color() #Refresh Color of GUI
+                    gui.update_gui() #Refresh GUI Positions and Re-check for Any Changed Colors
+                    if current_goal == [end_row,end_col]: #Reached End State At The End of The Process
                         pass
                     else:
-                        give_coffee() #Goal Reached               
+                        give_coffee() #Goal Reached
                     break
             else:
-                move_to(step[0],step[1])
+                move_to(step[0],step[1]) #Move to Next Position In BFS Path
                 gui.update_color()
-                gui.update_gui() #Refresh GUI
+                gui.update_gui()
     if (environment.failed_state):
         print("Fail!")
     else:    
         print("Success!")
-    environment.staff_visited_checker = environment.path
-    gui.draw_visited_path()
+    gui.draw_visited_path() #Draw Path on GUI
     if environment.failed_state:
-        gui.highlight_thirsty_staff()
+        gui.highlight_thirsty_staff() #Mark Staff That Did Not Recieve Coffee Due to Failed State
