@@ -193,7 +193,7 @@ def start_new_goal(): #Start
                     if current_goal == [end_row,end_col]:
                         pass
                     else:
-                        give_coffee() #Goal Reached                    
+                        give_coffee() #Goal Reached               
                     break
             else:
                 move_to(step[0],step[1])
@@ -203,3 +203,4 @@ def start_new_goal(): #Start
         print("Mission Failed!")
     else:    
         print("Mission Accomplished!")
+    gui.draw_visited_path()

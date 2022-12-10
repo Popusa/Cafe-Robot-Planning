@@ -14,17 +14,24 @@ def make_grid():
             buttonslist[i][j].grid(row=i,column=j)
 
 def update_color():
-    counter = 0
     for i in range(len(environment.env)):
         for j in range(len(environment.env)):
             if 'TA' in environment.env[i][j] or 'DR' in environment.env[i][j]:
-                buttonslist[i][j].config(background="orange")
-                buttonslist[i][j].config(text = environment.mapped_names[i][j])
+                if [i,j] in environment.path and environment.env[i][j] in environment.requested_staff:
+                    buttonslist[i][j].config(background="white")
+                    buttonslist[i][j].config(text = environment.mapped_names[i][j])
+                else:
+                    buttonslist[i][j].config(background="orange")
+                    buttonslist[i][j].config(text = environment.mapped_names[i][j])
             elif '-1' in environment.env[i][j]:
                 buttonslist[i][j].config(background="black")
             elif 'DW' in environment.env[i][j]:
-                buttonslist[i][j].config(background="blue")
-                buttonslist[i][j].config(foreground="white")
+                if environment.door_stat[i][j] == 'CDW':
+                    buttonslist[i][j].config(background="red")
+                    buttonslist[i][j].config(foreground="white")
+                else:                 
+                    buttonslist[i][j].config(background="blue")
+                    buttonslist[i][j].config(foreground="white")
                 buttonslist[i][j].config(text = environment.mapped_names[i][j])
             elif 'CR' in environment.env[i][j]:
                 buttonslist[i][j].config(background="brown")
@@ -36,12 +43,23 @@ def update_color():
                 buttonslist[i][j].config(background="crimson")
             elif 'ES' in environment.env[i][j]:
                 buttonslist[i][j].config(background="red")
-            counter += 1
 
 def update_gui():
     window.update()
-    time.sleep(0.2)
+    time.sleep(0.1)
 
 def setup_gui():
     make_grid()
     update_color()
+
+def draw_visited_path():
+    while environment.path:
+        visited_pos = environment.path.pop(0)
+        buttonslist[visited_pos[0]][visited_pos[1]].config(background="yellow")
+        buttonslist[visited_pos[0]][visited_pos[1]].config(foreground="blue")
+        buttonslist[visited_pos[0]][visited_pos[1]]['text'] = environment.mapped_names[visited_pos[0]][visited_pos[1]]
+    for i in range (len(environment.env)):
+        for j in range(len(environment.env)):
+            if  environment.env[i][j] in environment.requested_staff:
+                buttonslist[i][j].config(background="white")
+                buttonslist[i][j].config(text = environment.mapped_names[i][j])

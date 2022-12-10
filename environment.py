@@ -3,6 +3,7 @@ restarted_state = False
 requested_staff = ['TA3','TA5','DR']
 requested_coffee = []
 success_state = False
+visited_goals = []
 path = []
 env = [
 ['-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1','-1'],
