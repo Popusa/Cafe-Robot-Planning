@@ -2,7 +2,7 @@ import environment
 import robot
 import random
 import gui
-fail_state_mode = False
+fail_state_mode = True
 start_row = 12
 start_col = 4
 end_row = 12
@@ -62,7 +62,7 @@ def open_door(row,col):
             environment.door_stat[row][col] = 'ODW'
             print("Door at Doorway",environment.mapped_names[row][col][2:], "is now opened")
             if fail_state_mode:
-                if random.randrange(1,10) == 5:
+                if random.randrange(1,3) == 2:
                     cafe_robot.update_coffee_cups()          #coffee cup spilled
 
 def enter_doorway(row,col):
@@ -200,7 +200,10 @@ def start_new_goal(): #Start
                 gui.update_color()
                 gui.update_gui() #Refresh GUI
     if (environment.failed_state):
-        print("Mission Failed!")
+        print("Fail!")
     else:    
-        print("Mission Accomplished!")
+        print("Success!")
+    environment.staff_visited_checker = environment.path
     gui.draw_visited_path()
+    if environment.failed_state:
+        gui.highlight_thirsty_staff()
