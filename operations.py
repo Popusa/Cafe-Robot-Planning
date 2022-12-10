@@ -1,11 +1,12 @@
 import environment
 import robot
 import random
+import time
+import gui
 start_row = 12
 start_col = 4
 expected_coffee_cups = 5
 cafe_robot = robot.robot(start_row,start_col,expected_coffee_cups)
-current_env = environment.env
 visited = []
 
 def find_location_in_env(env,item):
@@ -24,7 +25,7 @@ def restart_state():
      cafe_robot.update_pos(start_row,start_col)
 
 def check_door_status(row,col):
-	if environment.door_stat[row][col] == False and current_env[row][col].contains('DW'):
+	if environment.door_stat[row][col] == False and 'DW' in environment.env[row][col]:
 		return 'closed'
 	else: 
 		return 'open'
@@ -37,10 +38,13 @@ def check_pre_condition(row,col):
 
 def add_pos(row,col):
     cafe_robot.update_pos(row,col)
-    current_env[row][col] = 'CR'
+    environment.env[row][col] = 'CR'
 
 def delete_pos(row,col):
-	current_env[row][col] = environment.mapped_name[row][col]
+    if environment.mapped_name[row][col] == 'CR':
+        environment.env[row][col] = '0'
+    else:
+        environment.env[row][col] = environment.mapped_name[row][col]
 
 def give_coffee():
     if expected_coffee_cups >= 1:
@@ -55,18 +59,19 @@ def give_coffee():
 def open_door(row,col):
     if check_pre_condition(row,col) == True and check_door_status(row,col) == 'open':
             environment.door_stat[row][col] = True
+            print("Door at ",row, " ", col, " is now opened")
             if random.randrange(1, 10) == 3:
                 cafe_robot.update_coffee_cups()          #coffee cup spilled
 
-def enter_doorway(row,col):
-	if entered_room == False:                 #robot is in corridor
-		move_to(row,col)
-		entered_room = True
+# def enter_doorway(row,col):
+# 	if entered_room == False:                 #robot is in corridor
+# 		move_to(row,col)
+# 		entered_room = True
 
-def exit_doorway(row,col):
-	if entered_room == True:                 #robot is in corridor
-		move_to(row,col)
-		entered_room = False
+# def exit_doorway(row,col):
+# 	if entered_room == True:                 #robot is in room
+# 		move_to(row,col)
+# 		entered_room = False
 
 def check_failure(): #this function will be called after every door opening move
     if (expected_coffee_cups != cafe_robot.coffee_cups):
@@ -78,20 +83,19 @@ def move_to(row,col):
     if check_failure() == True:
         restart_state()
         return
-    if check_pre_condition(row,col) == True and current_env[row][col] != '-1':
-        if current_env[row][col].contains('DW') and check_door_status(row,col)  == 'closed':
+    if check_pre_condition(row,col) == True and environment.env[row][col] != '-1':
+        if 'DW' in environment.env[row][col] and check_door_status(row,col)  == 'closed':
             open_door(row,col)
             delete_pos(cafe_robot.robot_position_row,cafe_robot.robot_position_col)
             add_pos(row,col)
             environment.path.append([row,col])
-        elif current_env[row][col].contains('DW') and check_door_status(row,col) == 'open':
+        else:
+            delete_pos(cafe_robot.robot_position_row,cafe_robot.robot_position_col)	
             add_pos(row,col)
             environment.path.append([row,col])
-        else:	
-            add_pos(row,col)
-            environment.path.append([row,col])
+        print("Moved to pos", row," ", col)
     else:
-            return 'invalid location'
+        print('invalid location')
             
 
 def mark_visited(node, v):
@@ -101,18 +105,17 @@ def mark_visited(node, v):
 #0 0 0
 #0 0 0
 def get_neighbors(node):
-    #node must be passed to the function in the [row,col] format
-    adj_nodes = []
-    if [node-1,node] != '-1':
-        adj_nodes.append([node-1,node])
-    if [node+1,node] != '-1':    
-        adj_nodes.append([node+1,node])
-    if [node,node-1] != '-1':
-        adj_nodes.append([node,node-1])
-    if [node,node+1] != '-1':
-        adj_nodes.append([node,node+1])
-    return adj_nodes    
-
+    neighbours = []
+    node_row = node[0]
+    node_col = node[1]
+    neighbours.append(environment.env[node_row - 1][node_col]) #top
+    neighbours.append(environment.env[node_row][node_col + 1]) #right
+    neighbours.append(environment.env[node_row + 1][node_col]) #bottom
+    neighbours.append(environment.env[node_row][node_col - 1]) #left
+    for node in neighbours:
+        if environment.env[node[0],node[1]] == '-1':
+            neighbours.remove(node)
+    return neighbours
 
 def is_visited(node,v):
     if node in v:
@@ -153,6 +156,7 @@ def start_new_goal(): #Start
     else:
         bfs_path = bfs([cafe_robot.robot_position_row,cafe_robot.robot_position_col],current_goal) #Shortest Path to Goal
         for step in bfs_path:
+            gui.update_gui()
             if step == current_goal:
                 give_coffee() #Goal Reached
                 break
