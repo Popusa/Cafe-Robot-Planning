@@ -7,7 +7,7 @@ start_row = 12
 start_col = 4
 end_row = 12
 end_col = 4
-expected_coffee_cups = 5
+expected_coffee_cups = 21
 cafe_robot = robot.robot(start_row,start_col,expected_coffee_cups)
 
 def find_location_in_env(env,item):
