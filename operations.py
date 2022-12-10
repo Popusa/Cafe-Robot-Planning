@@ -92,8 +92,7 @@ def move_to(row,col):
             delete_pos(cafe_robot.robot_position_row,cafe_robot.robot_position_col)	
             add_pos(row,col)
             environment.path.append([row,col])
-        print("Moved to pos", row," ", col)
-        print("robot is in pos", cafe_robot.robot_position_row,cafe_robot.robot_position_col)
+        print("robot is in position: ", cafe_robot.robot_position_row,cafe_robot.robot_position_col)
     else:
         print('invalid location')
             
@@ -108,9 +107,9 @@ def mark_visited(node, v):
 def check_node_validity(node):
     node_row = node[0]
     node_col = node[1]
-    if node_row < 0 or node_row > len(environment.env) - 1 or node_col < 0 or node_col > len(environment.env) - 1: #Invalid
-        return False
-    elif environment.env[node_row][node_col] == '-1' or environment.env[node_row][node_col] == 'CM': #Invalid
+    if environment.env[node_row][node_col] == '-1' or environment.env[node_row][node_col] == 'CM': #Invalid
+            return False
+    elif node_row < 0 or node_row > len(environment.env) - 1 or node_col < 0 or node_col > len(environment.env) - 1: #Invalid
         return False
     else:
         return True #Valid
@@ -123,11 +122,12 @@ def get_neighbors(node):
     neighbours.append([node_row,node_col + 1]) #right
     neighbours.append([node_row + 1,node_col]) #bottom
     neighbours.append([node_row,node_col - 1]) #left
-    for node in neighbours:
+
+    for node in neighbours: #First Layer of Error Catching
         node_row = node[0]
         node_col = node[1]
         if (check_node_validity([node_row,node_col])):
-            continue
+            pass
         else:
             neighbours.remove(node)
     return neighbours
@@ -150,11 +150,12 @@ def bfs(s, e):
             return bfs_path #Get Path
 
         adj_nodes = get_neighbors(node)
+        for node in adj_nodes: #Second Layer of Error Catching
+            if check_node_validity(node) == False:
+                adj_nodes.remove(node)
         for item in adj_nodes:
             if not is_visited(item, visited):
                 queue.append((item, bfs_path[:]))
-
-    return None  #Invalid Path
 
 # Start Stop Method
 
@@ -165,19 +166,18 @@ def get_next_goal(): #Stop
             return environment.requested_coffee[0] #Current Goal
 
 def start_new_goal(): #Start
-    current_goal = get_next_goal()
-    if current_goal == 'SS' or environment.success_state:
-        return
-    else:
-        environment.requested_coffee.append([12,4])
-        bfs_path = bfs([cafe_robot.robot_position_row,cafe_robot.robot_position_col],current_goal) #Shortest Path to Goal
-        for step in bfs_path:
-            if step == current_goal:
-                give_coffee(expected_coffee_cups) #Goal Reached
-                environment.requested_coffee.pop(0)
-                break
-            else:
-                move_to(step[0],step[1])
-                gui.update_color()
-                gui.update_gui()
-        start_new_goal() #Recursive Function Call to Get Next Goal
+        while environment.requested_coffee != []:
+            current_goal = get_next_goal()
+            print(current_goal)
+            environment.requested_coffee.append([12,4])
+            bfs_path = bfs([cafe_robot.robot_position_row,cafe_robot.robot_position_col],current_goal) #Shortest Path to Goal
+            print(bfs_path)
+            for step in bfs_path:
+                if step == current_goal:
+                    give_coffee(expected_coffee_cups) #Goal Reached
+                    environment.requested_coffee.pop(0)
+                    break
+                else:
+                    move_to(step[0],step[1])
+                    gui.update_color()
+                    gui.update_gui()
