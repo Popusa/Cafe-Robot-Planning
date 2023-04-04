@@ -1,7 +1,7 @@
 failed_state = False
 restarted_state = False
-requested_staff = ['TA3','TA5','DR']
-requested_coffee = []
+requested_staff = ['TA3','TA5','DR'] #play around with this list to try out different paths
+requested_coffee = [] #this list should not be touched. It is what the algorithm uses to know where to go
 success_state = False
 visited_goals = []
 path = []
