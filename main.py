@@ -1,16 +1,15 @@
-import environment as env
-import operations as ops
-import gui
+from operations import *
+from gui import *
 
 def execute_task():
-    if env.requested_coffee == []:
+    if env_lib.requested_coffee == []:
         return
-    ops.start_new_goal()
-    gui.window.after(0, execute_task)
+    start_new_goal()
+    window.after(0, execute_task)
 
 if __name__=="__main__":
-    gui.setup_gui()
-    ops.translate_staff_position(env.env)
-    env.requested_coffee.append([ops.end_row,ops.end_col])   
-    gui.window.after(0,execute_task)
-    gui.window.mainloop()
+    setup_gui()
+    translate_staff_position(env_lib.env)
+    env_lib.requested_coffee.append([end_row,end_col])
+    window.after(0,execute_task)
+    window.mainloop()

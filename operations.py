@@ -1,4 +1,4 @@
-import environment
+import environment as env_lib
 import robot
 import random
 import gui
@@ -18,16 +18,16 @@ def find_location_in_env(env,item):
 
 def translate_staff_position(env):
     listloop = 0
-    while(len(environment.requested_coffee) != len(environment.requested_staff)):
-        environment.requested_coffee.append(find_location_in_env(env,environment.requested_staff[listloop]))
+    while(len(env_lib.requested_coffee) != len(env_lib.requested_staff)):
+        env_lib.requested_coffee.append(find_location_in_env(env,env_lib.requested_staff[listloop]))
         listloop += 1
     
 def restart_state():
     print("I dropped a cup! I must go back and replace it!")
-    environment.requested_coffee = [[end_row,end_col]]
+    env_lib.requested_coffee = [[end_row,end_col]]
 
 def check_door_status(row,col):
-	if environment.door_stat[row][col] == 'CDW' and 'DW' in environment.env[row][col]:
+	if env_lib.door_stat[row][col] == 'CDW' and 'DW' in env_lib.env[row][col]:
 		return 'CDW'
 	else: 
 		return 'ODW'
@@ -40,13 +40,13 @@ def check_pre_condition(row,col):
 
 def add_pos(row,col):
     cafe_robot.update_pos(row,col)
-    environment.env[row][col] = 'CR'
+    env_lib.env[row][col] = 'CR'
 
 def delete_pos(row,col):
-    if environment.mapped_names[row][col] == 'CR':
-        environment.env[row][col] = '0'
+    if env_lib.mapped_names[row][col] == 'CR':
+        env_lib.env[row][col] = '0'
     else:
-        environment.env[row][col] = environment.mapped_names[row][col]
+        env_lib.env[row][col] = env_lib.mapped_names[row][col]
 
 def update_expected_cups():
     global expected_coffee_cups
@@ -59,8 +59,8 @@ def give_coffee():
 
 def open_door(row,col):
     if check_door_status(row,col) == 'CDW':
-            environment.door_stat[row][col] = 'ODW'
-            print("Door at Doorway",environment.mapped_names[row][col][2:], "is now opened")
+            env_lib.door_stat[row][col] = 'ODW'
+            print("Door at Doorway",env_lib.mapped_names[row][col][2:], "is now opened")
             if fail_state_mode:
                 if random.randrange(1,3) == 2:
                     cafe_robot.update_coffee_cups()          #coffee cup spilled
@@ -83,17 +83,17 @@ def check_failure(): #this function will be called after every door opening move
 
 def move_to(row,col):
     if check_failure() == True:
-        environment.failed_state = True
-    if check_pre_condition(row,col) == True and environment.env[row][col] != '-1':
-        if 'DW' in environment.env[row][col] and check_door_status(row,col)  == 'CDW':
+        env_lib.failed_state = True
+    if check_pre_condition(row,col) == True and env_lib.env[row][col] != '-1':
+        if 'DW' in env_lib.env[row][col] and check_door_status(row,col)  == 'CDW':
             open_door(row,col)
             delete_pos(cafe_robot.robot_position_row,cafe_robot.robot_position_col)
             add_pos(row,col)
-            environment.path.append([row,col])
+            env_lib.path.append([row,col])
         else:
             delete_pos(cafe_robot.robot_position_row,cafe_robot.robot_position_col)	
             add_pos(row,col)
-            environment.path.append([row,col])
+            env_lib.path.append([row,col])
         print("robot is in position: ", cafe_robot.robot_position_row,cafe_robot.robot_position_col)
             
 
@@ -107,12 +107,12 @@ def mark_visited(node, v):
 def check_node_validity(node):
     node_row = node[0]
     node_col = node[1]
-    location_name = environment.env[node_row][node_col][:2]
-    if environment.env[node_row][node_col] == '-1' or environment.env[node_row][node_col] == 'CM': #Invalid
+    location_name = env_lib.env[node_row][node_col][:2]
+    if env_lib.env[node_row][node_col] == '-1' or env_lib.env[node_row][node_col] == 'CM': #Invalid
             return False
     # elif location_name == 'TA':
     #     return False
-    elif node_row < 0 or node_row > len(environment.env) - 1 or node_col < 0 or node_col > len(environment.env) - 1: #Invalid
+    elif node_row < 0 or node_row > len(env_lib.env) - 1 or node_col < 0 or node_col > len(env_lib.env) - 1: #Invalid
         return False
     else:
         return True #Valid
@@ -163,13 +163,13 @@ def bfs(s, e):
 # Start Stop Method
 
 def get_next_goal(): #Stop
-        if environment.requested_coffee == []: #End (Success State)
+        if env_lib.requested_coffee == []: #End (Success State)
             return 'SS'
         else:
-            return environment.requested_coffee[0] #Current Goal
+            return env_lib.requested_coffee[0] #Current Goal
 
 def start_new_goal(): #Start
-    while environment.requested_coffee:
+    while env_lib.requested_coffee:
         current_goal = get_next_goal()
         if current_goal == 'SS':
             return
@@ -177,16 +177,16 @@ def start_new_goal(): #Start
         bfs_path = bfs([cafe_robot.robot_position_row,cafe_robot.robot_position_col],current_goal) #Shortest Path to Goal
         print(bfs_path)
         for step in bfs_path:
-            if environment.failed_state and not environment.restarted_state:
-                environment.restarted_state = True
+            if env_lib.failed_state and not env_lib.restarted_state:
+                env_lib.restarted_state = True
                 restart_state()
                 break
             if step == current_goal:
-                if environment.failed_state:
-                    environment.requested_coffee.pop(0)
+                if env_lib.failed_state:
+                    env_lib.requested_coffee.pop(0)
                     break
                 else:
-                    environment.requested_coffee.pop(0)
+                    env_lib.requested_coffee.pop(0)
                     move_to(step[0],step[1])
                     gui.update_color()
                     gui.update_gui() #Refresh GUI
@@ -199,11 +199,11 @@ def start_new_goal(): #Start
                 move_to(step[0],step[1])
                 gui.update_color()
                 gui.update_gui() #Refresh GUI
-    if (environment.failed_state):
+    if (env_lib.failed_state):
         print("Fail!")
     else:    
         print("Success!")
-    environment.staff_visited_checker = environment.path
+    env_lib.staff_visited_checker = env_lib.path
     gui.draw_visited_path()
-    if environment.failed_state:
+    if env_lib.failed_state:
         gui.highlight_thirsty_staff()
